@@ -4,7 +4,6 @@
 #include "List.h"
 
 #include <string>
-#include <vector>
 
 template< typename First, typename Second >
 class Pair {
@@ -30,11 +29,19 @@ public:
 
     explicit UnorderedMap();
     ~UnorderedMap();
-    // Value search(const Key& key) const;
-    // void insert(const Key& key, const Value& value);
 
     size_t getSize() const {
         return size;
+    }
+
+    Value& getKeyValue(const Key& key) {
+        size_t idx = getBasketNumber(MapHash(key));
+        auto &list = m_basket[idx];
+        for (auto& it : list)
+            if (it.getFirst() == key) {
+                return it.setSecond();
+            }
+        throw();
     }
 
     void insert(const Key& key, const Value& value) {
@@ -47,6 +54,7 @@ public:
             }
         list.push_back(Pair<Key, Value> (key, value));
         list_keys.push_back(Pair<Key, Value> (key, value));
+        size += 1;
     }
 
     bool contained(const Key& key) const{
@@ -80,7 +88,7 @@ public:
     }
 
 private:
-    std::vector<List<Pair<Key, Value>>> m_basket;
+    List<Pair<Key, Value>> *m_basket;
     List<Pair<Key, Value>> list_keys;
 
     size_t size = 0;
@@ -99,12 +107,13 @@ private:
 
 template< typename Key, typename Value >
 UnorderedMap<Key, Value>::UnorderedMap() {
-    m_basket.resize(_table_size);
+    // m_basket.resize(_table_size);
+    m_basket = new List<Pair<Key, Value>>[_table_size];
 }
 
 template< typename Key, typename Value >
 UnorderedMap<Key, Value>::~UnorderedMap() {
-    // ****** дополнить ******** //
+    delete[] m_basket;
 }
 
 template< typename Key, typename Value >
