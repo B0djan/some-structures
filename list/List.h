@@ -65,7 +65,7 @@ public:
         return it;
     }
 
-    void push_back(const T& rhs)
+    auto push_back(const T& rhs)
     {
         auto *tmp = new ListNode<T>(rhs);
         tail_ptr->prev->next = tmp;
@@ -73,6 +73,7 @@ public:
         tmp->next = tail_ptr;
         tail_ptr->prev = tmp;
         size += 1;
+        return tmp;
     }
 
     void push_front(const T& rhs)

@@ -1,10 +1,10 @@
 #ifndef _UNORDERED_MAP_H
 #define _UNORDERED_MAP_H
 
-#include "UnorderedMapIterator.h"
 #include "List.h"
 
 #include <string>
+#include <vector>
 
 template< typename First, typename Second >
 class Pair {
@@ -13,7 +13,6 @@ private:
     Second _second;
 public:
     Pair() = default;
-    explicit Pair(const First& first): _first(first) {};
     explicit Pair(const First& first, const Second& second): _first(first), _second(second) {};
 
     First& setFirst() { return _first; }
@@ -29,7 +28,7 @@ public:
     using const_iterator =  ::ListIterator<Pair<Key, Value>>;
     using iterator =        ::ListConstIterator<Pair<Key, Value>>;
 
-    explicit UnorderedMap() = default;
+    explicit UnorderedMap();
     ~UnorderedMap();
     // Value search(const Key& key) const;
     // void insert(const Key& key, const Value& value);
@@ -38,43 +37,25 @@ public:
         return size;
     }
 
-    Value& operator[] (Key key) {
+    void insert(const Key& key, const Value& value) {
         size_t idx = getBasketNumber(MapHash(key));
-        List<Pair<Key, Value>>& list = m_basket[idx];
-        for (auto& it : list) {
-            if (it.first == key) {
-                return it.second;
+        auto &list = m_basket[idx];
+        for (auto& it : list)
+            if (it.getFirst() == key) {
+                it.setSecond() = value;
+                return;
             }
-        }
-        auto new_pair = Pair<Key, Value> (key);
-        list.push_back(new_pair);
-        list_keys.push_back(new_pair);
-        return (list.end()->node.second);
+        list.push_back(Pair<Key, Value> (key, value));
+        list_keys.push_back(Pair<Key, Value> (key, value));
     }
 
-    /*
-    const Value& operator[] (Key key) const {
+    bool contained(const Key& key) const{
         size_t idx = getBasketNumber(MapHash(key));
-        auto list = m_basket[idx];
-        for (const auto it = list.begin(); it != list.end(); ++it) {
-            auto p = it->node;
-            if (p.first == key) {
-                return p.second;
-            }
-        }
-        return nullptr;
-    }
-     */
-
-    int contained(const Key& key) const{
-        size_t idx = getBasketNumber(MapHash(key, _table_size));
-        auto list = m_basket[idx];
-        for (const auto it = list.begin(); it != list.end(); ++it) {
-            auto p = it->node;
-            if (p.first == key) {
+        auto &list = m_basket[idx];
+        for (auto& it : list)
+            if (it.getFirst() == key) {
                 return true;
             }
-        }
         return false;
     }
 
@@ -99,7 +80,7 @@ public:
     }
 
 private:
-    List<Pair<Key, Value>> *m_basket = new List<Pair<Key, Value>>[_table_size];
+    std::vector<List<Pair<Key, Value>>> m_basket;
     List<Pair<Key, Value>> list_keys;
 
     size_t size = 0;
@@ -109,12 +90,17 @@ private:
     static int const _hash_cfA = 930310127;
     static int const _hash_cfB = 935489;
 
-    int MapHash (const std::string& str);
-    int MapHash (size_t key);
-    int MapHash (int key);
+    int MapHash (const std::string& str) const;
+    int MapHash (size_t key) const ;
+    int MapHash (int key) const;
 
-    size_t getBasketNumber(size_t hash);
+    size_t getBasketNumber(size_t hash) const;
 };
+
+template< typename Key, typename Value >
+UnorderedMap<Key, Value>::UnorderedMap() {
+    m_basket.resize(_table_size);
+}
 
 template< typename Key, typename Value >
 UnorderedMap<Key, Value>::~UnorderedMap() {
@@ -122,25 +108,25 @@ UnorderedMap<Key, Value>::~UnorderedMap() {
 }
 
 template< typename Key, typename Value >
-int UnorderedMap<Key, Value>::MapHash(const std::string& str) {
-    size_t hash = 0;
+int UnorderedMap<Key, Value>::MapHash(const std::string& str) const{
+    int hash = 0;
     for (auto ch : str)
         hash = (hash * _base + static_cast<int>(ch) );
     return hash;
 }
 
 template< typename Key, typename Value >
-int UnorderedMap<Key, Value>::MapHash(size_t key) {
+int UnorderedMap<Key, Value>::MapHash(int key) const{
     return (key * _hash_cfA) % _hash_cfB;
 }
 
-template< typename Key, typename Value >
-int UnorderedMap<Key, Value>::MapHash(int key) {
-    return (key * _hash_cfA) % _hash_cfB;
+template<typename Key, typename Value>
+int UnorderedMap<Key, Value>::MapHash(size_t key) const {
+    return ((int)key * _hash_cfA) % _hash_cfB;
 }
 
 template< typename Key, typename Value >
-size_t UnorderedMap<Key, Value>::getBasketNumber(size_t hash) {
+size_t UnorderedMap<Key, Value>::getBasketNumber(size_t hash) const{
     return hash % _table_size;
 }
 
