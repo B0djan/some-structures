@@ -6,14 +6,15 @@
 template<typename T>
 struct ListNode
 {
-    ListNode<T>* prev;
-    ListNode<T>* next;
+    ListNode<T>* prev = nullptr;
+    ListNode<T>* next = nullptr;
     T node;
 
-    explicit ListNode() : prev(nullptr), next(nullptr) {}
+    ListNode() : prev(nullptr), next(nullptr) {
+        node = T();
+    }
     explicit ListNode(const T& rhs) : node(rhs), prev(nullptr), next(nullptr) {}
 };
-
 
 template<class T>
 class List {
@@ -73,7 +74,7 @@ public:
         tmp->next = tail_ptr;
         tail_ptr->prev = tmp;
         size += 1;
-        return tmp;
+        return &tmp->node;
     }
 
     void push_front(const T& rhs)

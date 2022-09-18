@@ -12,7 +12,10 @@ private:
     Second _second;
 public:
     Pair() = default;
-    explicit Pair(const First& first, const Second& second): _first(first), _second(second) {};
+    explicit Pair(const First& first) : _first(first) {
+        _second = Second();
+    };
+    explicit Pair(const First& first, Second& second): _first(first), _second(second) {};
 
     First& setFirst() { return _first; }
     Second& setSecond() { return _second; }
@@ -24,8 +27,8 @@ public:
 template < typename Key, typename Value >
 class UnorderedMap {
 public:
-    using const_iterator =  ::ListIterator<Pair<Key, Value>>;
-    using iterator =        ::ListConstIterator<Pair<Key, Value>>;
+    using const_iterator =  ::ListIterator<Pair<Key, Value>*>;
+    using iterator =        ::ListConstIterator<Pair<Key, Value>*>;
 
     explicit UnorderedMap();
     ~UnorderedMap();
@@ -34,62 +37,42 @@ public:
         return size;
     }
 
-    Value& getKeyValue(const Key& key) {
+    Value& operator[] (const Key& key) {
         size_t idx = getBasketNumber(MapHash(key));
         auto &list = m_basket[idx];
         for (auto& it : list)
             if (it.getFirst() == key) {
                 return it.setSecond();
             }
-        throw();
-    }
-
-    void insert(const Key& key, const Value& value) {
-        size_t idx = getBasketNumber(MapHash(key));
-        auto &list = m_basket[idx];
-        for (auto& it : list)
-            if (it.getFirst() == key) {
-                it.setSecond() = value;
-                return;
-            }
-        list.push_back(Pair<Key, Value> (key, value));
-        list_keys.push_back(Pair<Key, Value> (key, value));
+        auto new_pair_ptr = list.push_back(Pair<Key, Value> (key));
+        list_keys.push_back(new_pair_ptr);
         size += 1;
-    }
-
-    bool contained(const Key& key) const{
-        size_t idx = getBasketNumber(MapHash(key));
-        auto &list = m_basket[idx];
-        for (auto& it : list)
-            if (it.getFirst() == key) {
-                return true;
-            }
-        return false;
+        return new_pair_ptr->setSecond();
     }
 
     const_iterator begin() const
     {
-        return list_keys.begin();
+        return (list_keys.begin());
     }
 
     const_iterator end() const
     {
-        return list_keys.end();
+        return (list_keys.end());
     }
 
     iterator begin()
     {
-        return list_keys.begin();
+        return (list_keys.begin());
     }
 
     iterator end()
     {
-        return list_keys.end();
+        return (list_keys.end());
     }
 
 private:
     List<Pair<Key, Value>> *m_basket;
-    List<Pair<Key, Value>> list_keys;
+    List<Pair<Key, Value>*> list_keys;
 
     size_t size = 0;
 
