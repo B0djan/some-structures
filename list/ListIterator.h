@@ -15,7 +15,8 @@ public:
     }
 
     ListConstIterator& operator++() {
-        current = current->next;
+        if (current)
+            current = current->next;
         return *this;
     }
 

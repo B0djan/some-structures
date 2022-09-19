@@ -4,16 +4,18 @@
 #include "ListIterator.h"
 
 template<typename T>
-struct ListNode
-{
-    ListNode<T>* prev = nullptr;
-    ListNode<T>* next = nullptr;
+struct ListNode {
+    ListNode<T>* prev;
+    ListNode<T>* next;
     T node;
 
     ListNode() : prev(nullptr), next(nullptr) {
         node = T();
     }
-    explicit ListNode(const T& rhs) : node(rhs), prev(nullptr), next(nullptr) {}
+    explicit ListNode(const T rhs) : node(rhs), prev(nullptr), next(nullptr) {}
+
+    T* getNodePtr() { return &node; }
+
 };
 
 template<class T>
@@ -22,69 +24,83 @@ public:
     using const_iterator =  ::ListConstIterator<T>;
     using iterator =        ::ListIterator<T>;
 
-    explicit List() : head_ptr(new ListNode<T>()), tail_ptr(new ListNode<T>())
-    {
-        head_ptr->next = tail_ptr;
-        tail_ptr->prev = head_ptr;
-    }
+    explicit List() : head_ptr(nullptr), tail_ptr(nullptr) {};
 
-    ~List()
-    {
-        auto it = head_ptr->next;
-        while (it) {
-            auto to_free = it;
-            it = it->next;
-            delete to_free;
-        }
+    ~List() {
+//        auto node = head_ptr;
+//        while (node) {
+//            auto next_node = node->next;
+//                delete node;
+//            node = next_node;
+//        }
     }
 
     const_iterator begin() const
     {
         const_iterator it;
-        it.current = head_ptr->next;
+        it.current = head_ptr;
         return it;
     }
 
     const_iterator end() const
     {
         const_iterator it;
-        it.current = tail_ptr;
+        if (tail_ptr)
+            it.current = tail_ptr->next;
         return it;
     }
 
     iterator begin()
     {
         iterator it;
-        it.current = head_ptr->next;
+        it.current = head_ptr;
         return it;
     }
 
     iterator end()
     {
         iterator it;
-        it.current = tail_ptr;
+        if (tail_ptr)
+            it.current = tail_ptr->next;
         return it;
     }
-
-    auto push_back(const T& rhs)
-    {
-        auto *tmp = new ListNode<T>(rhs);
-        tail_ptr->prev->next = tmp;
-        tmp->prev = tail_ptr->prev;
-        tmp->next = tail_ptr;
-        tail_ptr->prev = tmp;
+    T* push_back(const T& rhs) {
+        auto* new_node = new ListNode<T>(rhs);
+        if (!new_node)
+            return nullptr;
+        new_node->prev = tail_ptr;
+        if (tail_ptr)
+            tail_ptr->next = new_node;
+        tail_ptr = new_node;
+        if (!head_ptr)
+            head_ptr = new_node;
         size += 1;
-        return &tmp->node;
+        return new_node->getNodePtr();
+
+//        auto *tmp = new ListNode<T>(rhs);
+//
+//        tail_ptr->prev->next = tmp;
+//        tmp->prev = tail_ptr->prev;
+//        tmp->next = tail_ptr;
+//        tail_ptr->prev = tmp;
+//        size += 1;
+//        T* to_answer = &tmp->node;
+//        return to_answer;
+
     }
 
-    void push_front(const T& rhs)
+    T* push_front(const T& rhs)
     {
-        auto *tmp = new ListNode<T>(rhs);
-        head_ptr->next->pre = tmp;
-        tmp->next = head_ptr->next;
-        head_ptr->next = tmp;
-        tmp->pre = head_ptr;
-        size += 1;
+        auto* new_node = new ListNode<T>(rhs);
+        if (!new_node)
+            return nullptr;
+        new_node->next = head_ptr;
+        if (head_ptr)
+            head_ptr->prev = new_node;
+        head_ptr = new_node;
+        if (!tail_ptr)
+            tail_ptr = new_node;
+        return new_node->getNodePtr();
     }
 
     void pop_front()
