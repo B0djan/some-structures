@@ -1,14 +1,14 @@
 #ifndef _FREQUENCYDICTIONARY_H
 #define _FREQUENCYDICTIONARY_H
 
-#include "List.h"
-#include "UnorderedMap.h"
+#include "list.h"
+#include "unordered_map.h"
 
 class FrequencyDictionary {
 
 private:
-    UnorderedMap<std::string, int> string_to_number;
-    UnorderedMap<int, List<std::string>> number_to_string;
+    unordered_map<std::string, int> string_to_number;
+    unordered_map<int, list<std::string>> number_to_string;
     std::string* free_most_popular_words;
 
     static void updateNumberOfCopies(int i, int& pos1, int& pos2, int& pos3) {

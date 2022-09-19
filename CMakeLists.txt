@@ -9,8 +9,8 @@ include_directories(list)
 include_directories(specific)
 
 add_executable(some_structures
-    list/List.h
-    list/ListIterator.h
-    hash_table/UnorderedMap.h
+        list/list.h
+        list/list_iterator.h
+        hash_table/unordered_map.h
     specific/FrequencyDictionary.h
     main.cpp)
