@@ -16,9 +16,9 @@ public:
     };
     explicit Pair(const First& first, Second& second): _first(first), _second(second) {};
 
-    Second& setSecond() { return _second; }
-    First getFirst() const { return _first; }
-    Second getSecond() const { return _second; }
+    Second& second() { return _second; }
+    First first() const { return _first; }
+    Second second() const { return _second; }
 
 };
 
@@ -70,13 +70,13 @@ Value& unordered_map<Key, Value>::operator[] (const Key& key) {
     size_t idx = get_basket_number(map_hash(key));
     auto &list = _baskets[idx];
     for (auto& it : list)
-        if (it.getFirst() == key) {
-            return it.setSecond();
+        if (it.first() == key) {
+            return it.second();
         }
     auto new_pair_ptr = list.push_front(Pair<Key, Value> (key));
     _list_keys.push_back(new_pair_ptr);
     _size += 1;
-    return new_pair_ptr->setSecond();
+    return new_pair_ptr->second();
 }
 
 template< typename Key, typename Value >

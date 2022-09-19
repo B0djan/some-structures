@@ -3,7 +3,7 @@
 
 #include "list_iterator.h"
 
-template<typename T>
+template< typename T >
 struct list_node {
     list_node<T>* _prev;
     list_node<T>* _next;
@@ -17,7 +17,7 @@ struct list_node {
     T* getNodePtr() { return &_node; }
 };
 
-template<class T>
+template< class T >
 class list {
 private:
     list_node<T>* _head_ptr;
@@ -64,7 +64,7 @@ public:
     bool empty() { return _size == 0; }
 };
 
-template<typename T>
+template< typename T >
 list<T>::~list() {
     auto node = _head_ptr;
     while (node) {
@@ -74,7 +74,7 @@ list<T>::~list() {
     }
 }
 
-template<typename T>
+template< typename T >
 T* list<T>::push_back(const T& rhs) {
     auto* new_node = new list_node<T>(rhs);
     if (!new_node)
@@ -89,7 +89,7 @@ T* list<T>::push_back(const T& rhs) {
     return new_node->getNodePtr();
 }
 
-template<typename T>
+template< typename T >
 T* list<T>::push_front(const T& rhs) {
     auto* new_node = new list_node<T>(rhs);
     if (!new_node)
@@ -103,7 +103,7 @@ T* list<T>::push_front(const T& rhs) {
     return new_node->getNodePtr();
 }
 
-template<typename T>
+template< typename T >
 void list<T>::pop_front() {
     if (empty()) { return; }
     list_node<T> * tmp = _head_ptr->_next;
@@ -113,7 +113,7 @@ void list<T>::pop_front() {
     _size -= 1;
 }
 
-template<typename T>
+template< typename T >
 void list<T>::pop_back() {
     if (empty()) { return; }
     list_node<T>* tmp = _tail_ptr->pre;

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "FrequencyDictionary.h"
+#include "frequency_dictionary.h"
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -12,9 +12,9 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     std::string new_word;
-    FrequencyDictionary dictionary;
+    frequency_dictionary dictionary;
     while (file >> new_word)
         dictionary.add_word(new_word);
-    dictionary.printThreeMostPopularWords();
+    dictionary.print_three_most_popular_words();
     return 0;
 }
