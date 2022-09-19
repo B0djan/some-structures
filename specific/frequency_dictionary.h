@@ -4,13 +4,33 @@
 #include "unordered_map.h"
 
 class frequency_dictionary {
-
 private:
     unordered_map<std::string, int> _string_to_number;
     unordered_map<int, list<std::string>> _number_to_string;
     std::string* _free_most_popular_words;
 
+    const char* punctuation_marks = ".,!?:";
+
     static void update_number_of_copies(int i, int& pos1, int& pos2, int& pos3);
+
+    bool parse_word(const std::string& str, std::string& parsed_word) {
+        if (str.empty())
+            return false;
+        int end_offset = 0;
+        bool punctuation = true;
+        for (int i = (int)str.size() - 1; i >= 0 && punctuation; i--, end_offset++) {
+            punctuation = false;
+            for (const char* ptr = punctuation_marks; *ptr; ptr++)
+                punctuation = punctuation || (*ptr == str[i]);
+        }
+        for (int i = 0; i < (int)str.size() - end_offset; ++i) {
+            auto symbol = (char)tolower(str[i]);
+            if (!(symbol >= 'a' && symbol <= 'z'))
+                return false;
+        }
+        parsed_word = std::string(str.begin(), str.end()-end_offset + 1);
+        return true;
+    }
 
     void fill();
 public:
@@ -23,7 +43,9 @@ public:
     }
 
     void add_word(const std::string& word) {
-        _string_to_number[word] += 1;
+        std::string parsed_word;
+        if (parse_word(word, parsed_word))
+            _string_to_number[parsed_word] += 1;
     }
 
     void print_three_most_popular_words();
