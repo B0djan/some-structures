@@ -75,8 +75,8 @@ void frequency_dictionary::fill() {
         position = 0;
 
     for (const auto& p : _string_to_number) {
-        auto idx = p->second();
-        _number_to_string[idx].push_back(p->first());
+        auto idx = p.second();
+        _number_to_string[idx].push_back(p.first());
         update_number_of_copies(idx, positions[0], positions[1], positions[2]);
     }
 
