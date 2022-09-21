@@ -48,6 +48,7 @@ public:
     ~unordered_map();
 
     Value& operator[] (const Key& key);
+    void erase (const Key& key);
 
     const_iterator begin() const { return _list_keys.begin(); }
     iterator       begin()       { return _list_keys.begin(); }
@@ -77,6 +78,23 @@ Value& unordered_map<Key, Value>::operator[] (const Key& key) {
     _list_keys.push_back(new_pair_ptr);
     _size += 1;
     return new_pair_ptr->second();
+}
+
+template< typename Key, typename Value >
+void unordered_map<Key, Value>::erase (const Key& key) {
+    size_t idx = get_basket_number(map_hash(key));
+    auto &list = _baskets[idx];
+    for (auto& it : list)
+        if (it.first() == key)
+            auto ptr = it;
+//    if (to_delete_list_node_ptr) {
+//        list.remove(to_delete_list_node_ptr);
+//    }
+    for (auto& l : _list_keys) {
+        if (l->first() == key)
+            auto ptr = &l;
+    }
+    _size -= 1;
 }
 
 template< typename Key, typename Value >

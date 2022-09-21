@@ -42,11 +42,29 @@ public:
         delete[] _free_most_popular_words;
     }
 
-    void add_word(const std::string& word) {
+    void insert(const std::string& word) {
         std::string parsed_word;
         if (parse_word(word, parsed_word))
             _string_to_number[parsed_word] += 1;
     }
+
+    void insert(const std::string& word, int value) {
+        std::string parsed_word;
+        if (parse_word(word, parsed_word))
+            _string_to_number[parsed_word] += value;
+    }
+
+    int search(const std::string& word) {
+        std::string parsed_word;
+        if (!parse_word(word, parsed_word))
+            return -1;
+        return _string_to_number[parsed_word];
+    }
+
+    void erase(const std::string& word) {
+        _string_to_number.erase(word);
+    }
+
 
     void print_three_most_popular_words();
 };

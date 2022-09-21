@@ -34,6 +34,7 @@ public:
     T* push_front(const T& rhs);
     void pop_front();
     void pop_back();
+    void remove(list_node<T> *node);
 
     const_iterator begin() const {
         const_iterator it;
@@ -121,6 +122,19 @@ void list<T>::pop_back() {
     _tail_ptr->pre = tmp->pre;
     delete tmp;
     _size -= 1;
+}
+
+template< typename T >
+void list<T>::remove(list_node<T> *node) {
+    if (node->_prev)
+        node->_prev->_next = node->_next;
+    if (node->_next)
+        node->_next->_prev = node->_prev;
+    if (_head_ptr == node)
+        _head_ptr = node->_next;
+    if (_tail_ptr == node)
+        _tail_ptr = node->_prev;
+    delete node;
 }
 
 
